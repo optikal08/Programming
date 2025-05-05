@@ -1,0 +1,10 @@
+130, Barnaul, 16
+2148, Kemerovo, 13
+3793, Tyumen, 10
+2252, Kaluga, 17
+2536, Surgut, 21
+703, Tula, 18
+5266, Cheboksary, 19
+4262, Tyumen, 16
+1155, SaintPetersburg, 23
+2106, Smolensk, 19
