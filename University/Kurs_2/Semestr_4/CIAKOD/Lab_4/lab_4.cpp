@@ -6,7 +6,7 @@
 #include <string>
 
 using namespace std;
-
+// kaka``
 // класс, описывающий информацию поездов
 class Train {
 private:
