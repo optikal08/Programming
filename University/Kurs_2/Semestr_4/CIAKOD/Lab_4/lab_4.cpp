@@ -141,11 +141,147 @@ public:
     // Удаление узла
     void Pop_Knot(int number) {
         Knot* deleted_knot = root;
-        Knot* current_knot = root;
+        Knot* current_knot = nullptr;
+        Knot* father_knot = nullptr;
 
-        if (deleted_knot == nullptr) return;
-        while (current_knot->L_Knot != nullptr && current_knot->R_Knot != nullptr) {
-            if (current_knot > )
+        if (deleted_knot == nullptr)
+            return;
+
+        // cout << "ALARMER\n";
+
+        bool flag = false;
+        while (deleted_knot != nullptr && deleted_knot->express.get_number() != number) {
+            // cout << "deleted_knot = " << deleted_knot->express.get_number() << "\n";
+            // cout << "ALARM1\n";
+            if (deleted_knot->express.get_number() > number) {
+                if (deleted_knot->L_Knot != nullptr) {
+                    father_knot = deleted_knot;
+                    deleted_knot = deleted_knot->L_Knot;
+                    // cout << "1" << "\n";
+                } else {
+                    deleted_knot = nullptr;
+                }
+            } else if (deleted_knot->express.get_number() < number) {
+                if (deleted_knot->R_Knot != nullptr) {
+                    father_knot = deleted_knot;
+                    deleted_knot = deleted_knot->R_Knot;
+                    // cout << "2" << "\n";
+                } else {
+                    deleted_knot = nullptr;
+                }
+            }
+        }
+        // cout << "!@#\n";
+        // cout << deleted_knot->express.get_number() << "\n";
+        // cout << current_knot->express.get_number() << "\n";
+        // cout << father_knot->express.get_number() << "\n";
+        if (deleted_knot != nullptr) {
+            if (deleted_knot->express.get_number() == number) {
+                flag = true;
+            }
+        } else {
+            cout << "Такого узла нет\n";
+            return;
+        }
+
+        // cout << "deleted_knot = " << deleted_knot->express.get_number() << "\n";
+        // cout << "father_knot = " << father_knot->express.get_number() << "\n";
+
+        if (flag == true) {
+            // cout << "ALARM2\n";
+            // cout << deleted_knot->L_Knot->express.get_number() << " " << deleted_knot->R_Knot->express.get_number() << "\n";
+            // Нет дочерних узлов
+            if (deleted_knot->L_Knot == nullptr && deleted_knot->R_Knot == nullptr) {
+                cout << "ALARM 1\n";
+                if (father_knot != nullptr) {
+                    if (father_knot->L_Knot == deleted_knot) {
+                        father_knot->L_Knot = nullptr;
+                        delete deleted_knot;
+                    } else {
+                        father_knot->R_Knot = nullptr;
+                        delete deleted_knot;
+                    }
+                } else {
+                    root = nullptr;
+                    delete deleted_knot;
+                }
+
+            }
+
+            // 1 дочерний узел
+            else if ((deleted_knot->L_Knot != nullptr && deleted_knot->R_Knot == nullptr) || (deleted_knot->L_Knot == nullptr && deleted_knot->R_Knot != nullptr)) {
+                // cout << "ALARM 2\n";
+                if (deleted_knot->L_Knot != nullptr && deleted_knot->R_Knot == nullptr) {
+                    if (father_knot == nullptr) {
+                        root = nullptr;
+                        delete deleted_knot;
+                    } else if (father_knot->L_Knot == deleted_knot) {
+                        father_knot->L_Knot = deleted_knot->L_Knot;
+                        delete deleted_knot;
+                    } else {
+                        father_knot->R_Knot = deleted_knot->L_Knot;
+                        delete deleted_knot;
+                    }
+                } else if (deleted_knot->L_Knot == nullptr && deleted_knot->R_Knot != nullptr) {
+                    if (father_knot == nullptr) {
+                        root = nullptr;
+                        delete deleted_knot;
+                    } else if (father_knot->L_Knot == deleted_knot) {
+                        father_knot->L_Knot = deleted_knot->R_Knot;
+                        if (deleted_knot == root) {
+                            root = father_knot;
+                        }
+                        delete deleted_knot;
+                    } else {
+                        father_knot->R_Knot = deleted_knot->R_Knot;
+                        if (deleted_knot == root) {
+                            root = father_knot;
+                        }
+                        delete deleted_knot;
+                    }
+                }
+            }
+
+            // 2 дочених узла ???
+            else if (deleted_knot->R_Knot != nullptr && deleted_knot->L_Knot != nullptr) {
+                // cout << "ALARM 3\n";
+                current_knot = Find_Max(deleted_knot->L_Knot);
+                // cout << current_knot->express.get_number() << "!@#\n";
+                if (deleted_knot->L_Knot->R_Knot != nullptr) {
+                    // cout << "al1\n";
+                    Knot* current_father = deleted_knot->L_Knot;
+                    while (current_father->R_Knot != current_knot) {
+                        current_father = current_father->R_Knot;
+                        // cout << "123";
+                    }
+                    // cout << current_father->express.get_number() << "\n";
+                    current_father->R_Knot = current_knot->L_Knot;
+                    if (father_knot != nullptr && father_knot->L_Knot == deleted_knot) {
+                        father_knot->L_Knot = current_knot;
+                    } else if (father_knot != nullptr) {
+                        father_knot->R_Knot = current_knot;
+                    } else {
+                        root = current_knot;
+                    }
+                    // cout << deleted_knot->L_Knot->express.get_number() << "   123123123\n";
+                    current_knot->L_Knot = deleted_knot->L_Knot;
+                    current_knot->R_Knot = deleted_knot->R_Knot;
+                    delete deleted_knot;
+                } else {
+                    // cout << "!@#\n";
+                    if (father_knot != nullptr && father_knot->L_Knot == deleted_knot) {
+                        father_knot->L_Knot = current_knot;
+                    } else if (father_knot != nullptr) {
+                        father_knot->R_Knot = current_knot;
+                    } else {
+                        // cout << "(*^%)\n";
+                        root = current_knot;
+                    }
+                    current_knot->L_Knot = nullptr;
+                    current_knot->R_Knot = deleted_knot->R_Knot;
+                    delete deleted_knot;
+                }
+            }
         }
     }
 
@@ -196,15 +332,21 @@ int main() {
     }
 
     // Проверка Add_Knot
-    Train test_train1(111, "SAMARA", 13);
+    Train test_train1(2000, "SAMARA", 13);
     trains.Add_Knot(test_train1);
+
+    Train test_train2(111, "SAMARA", 13);
+    trains.Add_Knot(test_train2);
+
+    trains.Print_All();
+    cout << "\n";
+
+    // Проверка Pop_Knot
+    trains.Pop_Knot(130);
 
     // Проверка Print_All
     trains.Print_All();
     cout << "\n";
-
-    // // Проверка Pop_Knot
-    // trains.Pop_Knot(130);
 
     // // trains.Find_Train(130);
     // cout << "-----------\n";
