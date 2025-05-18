@@ -300,6 +300,39 @@ public:
             current_knot = current_knot->L_Knot;
         return current_knot;
     }
+
+    // Поиск по станции
+    void Find_By_Station(string station) {
+        Knot* current_root = root;
+        stack<Knot*> Train_stack;
+        bool flag = false;
+        while (current_root != nullptr) {
+            // cout << current_root->express.get_number() << " " << current_root->express.get_next_station() 
+            // << " " << current_root->express.get_departure_time() << "\n";
+            if (current_root->express.get_next_station() == station) {
+                flag = true;
+                cout << current_root->express.get_number() << "\n";
+            }
+            if (current_root->L_Knot != nullptr) {
+                if (current_root->R_Knot != nullptr) {
+                    Train_stack.push(current_root->R_Knot);
+                }
+                current_root = current_root->L_Knot;
+            }
+            else if (current_root->R_Knot != nullptr){
+                current_root = current_root->R_Knot;
+            }
+            else {
+                if (not Train_stack.empty()) {
+                    current_root = Train_stack.top();
+                    Train_stack.pop();
+                }
+                else {
+                    current_root = nullptr;
+                }
+            }
+        }
+    }
 };
 
 int main() {
@@ -347,6 +380,9 @@ int main() {
     // Проверка Print_All
     trains.Print_All();
     cout << "\n";
+
+    // Проверка поиска по значению
+    trains.Find_By_Station("SAMARA");
 
     // // trains.Find_Train(130);
     // cout << "-----------\n";
