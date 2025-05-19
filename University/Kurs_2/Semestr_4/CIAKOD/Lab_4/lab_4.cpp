@@ -4,9 +4,10 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 using namespace std;
-// kaka``
+
 // класс, описывающий информацию поездов
 class Train {
 private:
@@ -242,7 +243,7 @@ public:
                 }
             }
 
-            // 2 дочених узла ???
+            // 2 дочених узла
             else if (deleted_knot->R_Knot != nullptr && deleted_knot->L_Knot != nullptr) {
                 // cout << "ALARM 3\n";
                 current_knot = Find_Max(deleted_knot->L_Knot);
@@ -336,6 +337,7 @@ public:
 };
 
 int main() {
+    auto start_time = std::chrono::high_resolution_clock::now(); // Начало измерения
     setlocale(LC_ALL, "Russian");
 
     Splay_Tree trains;
@@ -364,25 +366,36 @@ int main() {
         }
     }
 
+    // Проверка поиска по значению
+    // trains.Find_By_Station("Kemerovo");
+
+    // Проверка Find_Train
+    Knot* ft = trains.Find_Train(3427);
+    if (ft != nullptr) cout << "IT IS EXISTS\n" << ft->express.get_number() << " "
+        << ft->express.get_next_station() << " " << ft->express.get_departure_time() << "\n";
+    else cout << "IT IS NOT EXISTS\n";
+    
+
+    auto end_time = std::chrono::high_resolution_clock::now(); // Завершение измерения
+
+    cout << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() << std::endl;
+
     // Проверка Add_Knot
-    Train test_train1(2000, "SAMARA", 13);
-    trains.Add_Knot(test_train1);
+    // Train test_train1(2000, "SAMARA", 13);
+    // trains.Add_Knot(test_train1);
 
-    Train test_train2(111, "SAMARA", 13);
-    trains.Add_Knot(test_train2);
+    // Train test_train2(111, "SAMARA", 13);
+    // trains.Add_Knot(test_train2);
 
-    trains.Print_All();
-    cout << "\n";
+    // trains.Print_All();
+    // cout << "\n";
 
     // Проверка Pop_Knot
-    trains.Pop_Knot(130);
+    // trains.Pop_Knot(130);
 
     // Проверка Print_All
-    trains.Print_All();
-    cout << "\n";
-
-    // Проверка поиска по значению
-    trains.Find_By_Station("SAMARA");
+    // trains.Print_All();
+    // cout << "\n";
 
     // // trains.Find_Train(130);
     // cout << "-----------\n";
