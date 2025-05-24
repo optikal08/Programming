@@ -1,10 +1,10 @@
+#include <chrono>
 #include <clocale>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <chrono>
 
 using namespace std;
 // Обычное бинарное дерево. Преписка сплей из за копирования из другого проекта, нень убирать...
@@ -39,12 +39,12 @@ struct Knot {
     }
 };
 
-class Splay_Tree {
+class Binary_Tree {
 private:
     Knot* root;
 
 public:
-    Splay_Tree() {
+    Binary_Tree() {
         root = nullptr;
     }
 
@@ -308,7 +308,7 @@ public:
         stack<Knot*> Train_stack;
         bool flag = false;
         while (current_root != nullptr) {
-            // cout << current_root->express.get_number() << " " << current_root->express.get_next_station() 
+            // cout << current_root->express.get_number() << " " << current_root->express.get_next_station()
             // << " " << current_root->express.get_departure_time() << "\n";
             if (current_root->express.get_next_station() == station) {
                 flag = true;
@@ -319,16 +319,13 @@ public:
                     Train_stack.push(current_root->R_Knot);
                 }
                 current_root = current_root->L_Knot;
-            }
-            else if (current_root->R_Knot != nullptr){
+            } else if (current_root->R_Knot != nullptr) {
                 current_root = current_root->R_Knot;
-            }
-            else {
+            } else {
                 if (not Train_stack.empty()) {
                     current_root = Train_stack.top();
                     Train_stack.pop();
-                }
-                else {
+                } else {
                     current_root = nullptr;
                 }
             }
@@ -337,10 +334,10 @@ public:
 };
 
 int main() {
-    auto start_time = std::chrono::high_resolution_clock::now(); // Начало измерения
+    
     setlocale(LC_ALL, "Russian");
 
-    Splay_Tree trains;
+    Binary_Tree trains;
 
     ifstream input_file("input_file.txt");
     if (!input_file.is_open()) {
@@ -369,16 +366,20 @@ int main() {
     // Проверка поиска по значению
     // trains.Find_By_Station("Kemerovo");
 
+    auto start_time = std::chrono::high_resolution_clock::now(); // Начало измерения
+
     // Проверка Find_Train
-    Knot* ft = trains.Find_Train(3427);
-    if (ft != nullptr) cout << "IT IS EXISTS\n" << ft->express.get_number() << " "
-        << ft->express.get_next_station() << " " << ft->express.get_departure_time() << "\n";
-    else cout << "IT IS NOT EXISTS\n";
-    
+    Knot* ft = trains.Find_Train(4879);
+    if (ft != nullptr)
+        cout << "IT IS EXISTS\n"
+             << ft->express.get_number() << " "
+             << ft->express.get_next_station() << " " << ft->express.get_departure_time() << "\n";
+    else
+        cout << "IT IS NOT EXISTS\n";
 
     auto end_time = std::chrono::high_resolution_clock::now(); // Завершение измерения
 
-    cout << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() << std::endl;
+    cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count() << std::endl;
 
     // Проверка Add_Knot
     // Train test_train1(2000, "SAMARA", 13);
