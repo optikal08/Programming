@@ -149,7 +149,6 @@ public:
                     current_knot->R_Knot = father;
                     father->Parent = current_knot;
                     current_knot->Parent = nullptr;
-        
                 }
                 else {
                     father->R_Knot = current_knot->L_Knot;
@@ -157,8 +156,7 @@ public:
 
                     current_knot->L_Knot = father;
                     father->Parent = current_knot;
-                    current_knot->Parent = nullptr;
-                    
+                    current_knot->Parent = nullptr; 
                 }
             }
             else {
