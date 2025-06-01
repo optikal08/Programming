@@ -36,7 +36,7 @@ struct Knot {
     Knot* L_Knot;
 
     Knot(Train& train) : express(train) {
-        height = 1; // Высота нового узла равна 1
+        height = 1; 
         R_Knot = nullptr;
         L_Knot = nullptr;
     }
@@ -90,7 +90,6 @@ private:
 
     // Рекурсивная вставка
     Knot* insert(Knot* knot, Train train) {
-        // Выполняем стандартную вставку в бинарное дерево поиска
         if (!knot) return new Knot(train);
 
         if (train.get_number() < knot->express.get_number()) {
@@ -107,7 +106,7 @@ private:
         // Получаем фактор баланса
         int balance = getBalance(knot);
 
-        // Если узел стал несбалансированным, выполняем ротации
+        // Если узел стал несбалансированным, выполняем повороты
         // Левый левый случай
         if (balance > 1 && train.get_number() < knot->L_Knot->express.get_number()) {
             return rightRotate(knot);
@@ -130,7 +129,7 @@ private:
             return leftRotate(knot);
         }
 
-        return knot; // Возвращаем (неизмененный) указатель узла
+        return knot; 
     }
 
     // Рекурсивное удаление узла
@@ -194,7 +193,7 @@ private:
             return leftRotate(knot);
         }
 
-        return knot; // Возвращаем (неизмененный) указатель узла
+        return knot; 
     }
 
     // Нахождение минимального ключа
@@ -318,8 +317,8 @@ int main() {
     // trains.Pop_Knot(130);
 
     // Проверка вывода всех узлов
-    // cout << "Все поезда:\n";
-    // trains.Print_All();
+    cout << "Все поезда:\n";
+    trains.Print_All();
     auto start_time = std::chrono::high_resolution_clock::now(); // Начало измерения
 
     // Проверка поиска по значению

@@ -1,273 +1,273 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <iomanip> 
 #include <clocale>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
 // класс, описывающий информацию поездов
-class Train { 
-    private:
-        int number; // номер поезда 
-        string next_station; // следущая станция
-        int departure_time; // время отправления
-    public:
-        Train(int n, string s, int t) {
-            number = n;
-            next_station = s;
-            departure_time = t;
-        }
-    
-        int get_number() {return number;}
-        string get_next_station() {return next_station;}
-        int get_departure_time() {return departure_time;}
+class Train {
+private:
+    int number;          // номер поезда
+    string next_station; // следущая станция
+    int departure_time;  // время отправления
+public:
+    Train(int n, string s, int t) {
+        number = n;
+        next_station = s;
+        departure_time = t;
+    }
+
+    int get_number() { return number; }
+    string get_next_station() { return next_station; }
+    int get_departure_time() { return departure_time; }
 };
-    
+
 // Структура узла дерева
-struct Knot { 
+struct Node {
     Train express;
-    
-    Knot* Parent;
-    Knot* R_Knot;
-    Knot* L_Knot;
-    
-    Knot (Train& train):express(train){
-        R_Knot = nullptr;
-        L_Knot = nullptr;
+
+    Node* Parent;
+    Node* R_Node;
+    Node* L_Node;
+
+    Node(Train& train) : express(train) {
+        R_Node = nullptr;
+        L_Node = nullptr;
         Parent = nullptr;
     }
 };
 
 class Splay_Tree {
 private:
-    Knot* root;
-    
+    Node* root;
+
 public:
     Splay_Tree() {
         root = nullptr;
     }
-    
-    Knot* get_root() {return root;}
-    
+
+    Node* get_root() { return root; }
+
     // Проверка на пустоту
     bool Is_Empty() {
         return root == nullptr;
     }
-    
-     // Добавление нового элента
-    void Add_Knot(Knot k) {
-        Knot* adder_knot = new Knot(k);
-        Knot* current_knot = root;
+
+    // Добавление нового элента
+    void Add_Knot(Node k) {
+        Node* adder_node = new Node(k);
+        Node* current_node = root;
         if (Is_Empty()) {
-            root = adder_knot;
-        }
-        else {
+            root = adder_node;
+        } else {
             bool flag = false;
-            // cout << "root->express.get_number() = " << root->express.get_number() << "\n";
             while (not flag) {
-                // i++;
-                // cout << adder_knot->express.get_number() <<"\n";
-                // cout << current_knot->express.get_number() << "\n";
-                if (adder_knot->express.get_number() > current_knot->express.get_number()) {
+                if (adder_node->express.get_number() > current_node->express.get_number()) {
                     // cout << "ALARM_ADD\n";
-                    if (current_knot->R_Knot == nullptr) {
-                        current_knot->R_Knot = adder_knot;
-                        adder_knot->Parent = current_knot;
+                    if (current_node->R_Node == nullptr) {
+                        current_node->R_Node = adder_node;
+                        adder_node->Parent = current_node;
                         flag = true;
+                    } else {
+                        current_node = current_node->R_Node;
                     }
-                    else {
-                        current_knot = current_knot->R_Knot;
-                    }
-                }
-                else {
-                    if (current_knot->L_Knot == nullptr) {
-                        current_knot->L_Knot = adder_knot;
-                        adder_knot->Parent = current_knot;
+                } else {
+                    if (current_node->L_Node == nullptr) {
+                        current_node->L_Node = adder_node;
+                        adder_node->Parent = current_node;
                         flag = true;
-                    }
-                    else {
-                        current_knot = current_knot->L_Knot;
+                    } else {
+                        current_node = current_node->L_Node;
                     }
                 }
             }
         }
 
-        Move_Knot_to_Root(adder_knot);
+        Move_Knot_to_Root(adder_node);
     }
 
     // Вывод всех элементов дерева
     void Print_All() {
-            Knot* current_root = root;
-            stack<Knot*> Train_stack;
-            while (current_root != nullptr) {
-                cout << current_root->express.get_number() << " " << current_root->express.get_next_station() 
-                << " " << current_root->express.get_departure_time() << "\n";
-               
-                if (current_root->L_Knot != nullptr) {
-                if (current_root->R_Knot != nullptr) {
-                    Train_stack.push(current_root->R_Knot);
-                }
-                current_root = current_root->L_Knot;
+        if (root == nullptr) {
+            cout << "Дерево пустое\n";
+            return;
+        }
+        Node* current_node = root;
+        stack<Node*> Train_stack;
+        while (current_node != nullptr || !Train_stack.empty()) {
+            while (current_node != 0) {
+                Train_stack.push(current_node);
+                current_node = current_node->L_Node;
             }
-            else if (current_root->R_Knot != nullptr){
-                current_root = current_root->R_Knot;
-            }
-            else {
-                if (not Train_stack.empty()) {
-                    current_root = Train_stack.top();
-                    Train_stack.pop();
-                }
-                else {
-                    current_root = nullptr;
-                }
-            }
+
+            current_node = Train_stack.top();
+            Train_stack.pop();
+
+            cout << current_node->express.get_number() << " " << current_node->express.get_next_station()
+                 << " " << current_node->express.get_departure_time() << "\n";
+
+            current_node = current_node->R_Node;
         }
     }
 
     // Поднятия узла в корень
-    void Move_Knot_to_Root(Knot* c) {
-        Knot* current_knot = c;
-        while (current_knot != root) {
-            Knot* father = current_knot->Parent;
-            Knot* grand_father;
-            if (current_knot->Parent == nullptr) {
+    void Move_Knot_to_Root(Node* c) {
+        Node* current_node = c;
+        while (current_node != root) {
+            Node* father = current_node->Parent;
+            Node* grand_father;
+            if (current_node->Parent == nullptr) {
                 grand_father = nullptr;
-                root = current_knot;
+                root = current_node;
                 break;
-            }
-            else {
+            } else {
                 grand_father = father->Parent;
             }
 
             if (grand_father == nullptr) { // малый поворот
-                if (father->L_Knot == current_knot) {
-                    father->L_Knot = current_knot->R_Knot;
-                    if (current_knot->R_Knot != nullptr) current_knot->R_Knot->Parent = father;
-                    
-                    current_knot->R_Knot = father;
-                    father->Parent = current_knot;
-                    current_knot->Parent = nullptr;
-                }
-                else {
-                    father->R_Knot = current_knot->L_Knot;
-                    if (current_knot->L_Knot != nullptr) current_knot->L_Knot->Parent = father;
+                if (father->L_Node == current_node) {
+                    father->L_Node = current_node->R_Node;
+                    if (current_node->R_Node != nullptr)
+                        current_node->R_Node->Parent = father;
 
-                    current_knot->L_Knot = father;
-                    father->Parent = current_knot;
-                    current_knot->Parent = nullptr; 
+                    current_node->R_Node = father;
+                    father->Parent = current_node;
+                    current_node->Parent = nullptr;
+                } else {
+                    father->R_Node = current_node->L_Node;
+                    if (current_node->L_Node != nullptr)
+                        current_node->L_Node->Parent = father;
+
+                    current_node->L_Node = father;
+                    father->Parent = current_node;
+                    current_node->Parent = nullptr;
                 }
-            }
-            else {
+            } else {
                 // zig-zig левый
-                if (grand_father->L_Knot == father && father->L_Knot == current_knot) {
-                    grand_father->L_Knot = father->R_Knot;
-                    if (father->R_Knot != nullptr) father->R_Knot->Parent = grand_father;
+                if (grand_father->L_Node == father && father->L_Node == current_node) {
+                    grand_father->L_Node = father->R_Node;
+                    if (father->R_Node != nullptr)
+                        father->R_Node->Parent = grand_father;
 
-                    father->L_Knot = current_knot->R_Knot;
-                    if (current_knot->R_Knot != nullptr) current_knot->R_Knot->Parent = father;
-                    father->R_Knot = grand_father;
+                    father->L_Node = current_node->R_Node;
+                    if (current_node->R_Node != nullptr)
+                        current_node->R_Node->Parent = father;
+                    father->R_Node = grand_father;
 
-                    current_knot->Parent = grand_father->Parent;
+                    current_node->Parent = grand_father->Parent;
 
-                    if (current_knot->Parent != nullptr) {
-                        if (current_knot->Parent->L_Knot == grand_father) current_knot->Parent->L_Knot = current_knot;
-                        else current_knot->Parent->R_Knot = current_knot;
+                    if (current_node->Parent != nullptr) {
+                        if (current_node->Parent->L_Node == grand_father)
+                            current_node->Parent->L_Node = current_node;
+                        else
+                            current_node->Parent->R_Node = current_node;
                     }
 
                     grand_father->Parent = father;
 
-                    father->Parent = current_knot;
+                    father->Parent = current_node;
 
-                    current_knot->R_Knot = father;
+                    current_node->R_Node = father;
                 }
                 // zig-zig правый
-                else if (grand_father->R_Knot == father && father->R_Knot == current_knot) {
-                    grand_father->R_Knot = father->L_Knot;
-                    if (father->L_Knot != nullptr) father->L_Knot->Parent = grand_father;
+                else if (grand_father->R_Node == father && father->R_Node == current_node) {
+                    grand_father->R_Node = father->L_Node;
+                    if (father->L_Node != nullptr)
+                        father->L_Node->Parent = grand_father;
 
-                    father->R_Knot = current_knot->L_Knot;
-                    if (current_knot->L_Knot != nullptr) current_knot->L_Knot->Parent = father;
-                    father->L_Knot = grand_father;
+                    father->R_Node = current_node->L_Node;
+                    if (current_node->L_Node != nullptr)
+                        current_node->L_Node->Parent = father;
+                    father->L_Node = grand_father;
 
-                    current_knot->Parent = grand_father->Parent;
-                    if (current_knot->Parent != nullptr) {
-                        if (current_knot->Parent->L_Knot == grand_father) current_knot->Parent->L_Knot = current_knot;
-                        else current_knot->Parent->R_Knot = current_knot;
+                    current_node->Parent = grand_father->Parent;
+                    if (current_node->Parent != nullptr) {
+                        if (current_node->Parent->L_Node == grand_father)
+                            current_node->Parent->L_Node = current_node;
+                        else
+                            current_node->Parent->R_Node = current_node;
                     }
 
                     grand_father->Parent = father;
 
-                    father->Parent = current_knot;
+                    father->Parent = current_node;
 
-                    current_knot->L_Knot = father;
+                    current_node->L_Node = father;
                 }
 
                 // zig-zag левый
-                else if (grand_father->L_Knot == father && father->R_Knot == current_knot) {
-                    grand_father->L_Knot = current_knot->R_Knot;
-                    if (current_knot->R_Knot != nullptr) current_knot->R_Knot->Parent = grand_father;
+                else if (grand_father->L_Node == father && father->R_Node == current_node) {
+                    grand_father->L_Node = current_node->R_Node;
+                    if (current_node->R_Node != nullptr)
+                        current_node->R_Node->Parent = grand_father;
 
-                    father->R_Knot = current_knot->L_Knot;
-                    if (current_knot->L_Knot != nullptr) current_knot->L_Knot->Parent = father;
+                    father->R_Node = current_node->L_Node;
+                    if (current_node->L_Node != nullptr)
+                        current_node->L_Node->Parent = father;
 
-                    current_knot->Parent = grand_father->Parent;
-                    if (current_knot->Parent != nullptr) {
-                        if (current_knot->Parent->L_Knot == grand_father) current_knot->Parent->L_Knot = current_knot;
-                        else current_knot->Parent->R_Knot = current_knot;
+                    current_node->Parent = grand_father->Parent;
+                    if (current_node->Parent != nullptr) {
+                        if (current_node->Parent->L_Node == grand_father)
+                            current_node->Parent->L_Node = current_node;
+                        else
+                            current_node->Parent->R_Node = current_node;
                     }
 
-                    current_knot->L_Knot = father;
-                    current_knot->R_Knot = grand_father;
-        
-                    father->Parent = current_knot;
-                    grand_father->Parent = current_knot;
+                    current_node->L_Node = father;
+                    current_node->R_Node = grand_father;
+
+                    father->Parent = current_node;
+                    grand_father->Parent = current_node;
                 }
 
                 // zig-zag правый
-                else if (grand_father->R_Knot == father && father->L_Knot == current_knot) {
-                    grand_father->R_Knot = current_knot->L_Knot;
-                    if (current_knot->L_Knot != nullptr) current_knot->L_Knot->Parent = grand_father;
+                else if (grand_father->R_Node == father && father->L_Node == current_node) {
+                    grand_father->R_Node = current_node->L_Node;
+                    if (current_node->L_Node != nullptr)
+                        current_node->L_Node->Parent = grand_father;
 
-                    father->L_Knot = current_knot->R_Knot;
-                    if (current_knot->R_Knot != nullptr) current_knot->R_Knot->Parent = father;
+                    father->L_Node = current_node->R_Node;
+                    if (current_node->R_Node != nullptr)
+                        current_node->R_Node->Parent = father;
 
-                    current_knot->Parent = grand_father->Parent;
-                    if (current_knot->Parent != nullptr){
-                        if (current_knot->Parent->L_Knot == grand_father) current_knot->Parent->L_Knot = current_knot;
-                        else current_knot->Parent->R_Knot = current_knot;
+                    current_node->Parent = grand_father->Parent;
+                    if (current_node->Parent != nullptr) {
+                        if (current_node->Parent->L_Node == grand_father)
+                            current_node->Parent->L_Node = current_node;
+                        else
+                            current_node->Parent->R_Node = current_node;
                     }
-                    
-                    current_knot->L_Knot = grand_father;
-                    current_knot->R_Knot = father;
-        
-                    father->Parent = current_knot;
-                    grand_father->Parent = current_knot;
+
+                    current_node->L_Node = grand_father;
+                    current_node->R_Node = father;
+
+                    father->Parent = current_node;
+                    grand_father->Parent = current_node;
                 }
             }
         }
     }
 
     // Поиск узла
-    Knot* Find_Train(int number) {
-        Knot* current_knot = root;
+    Node* Find_Train(int number) {
+        Node* current_node = root;
         bool flag = false;
         while (not flag) {
             // cout << "!@#";
-            // cout << current_knot->express.get_number() << "\n";
-            if (current_knot->express.get_number() == number) {
-                Move_Knot_to_Root(current_knot);
+            // cout << current_node->express.get_number() << "\n";
+            if (current_node->express.get_number() == number) {
+                Move_Knot_to_Root(current_node);
                 flag = true;
-                return current_knot;
+                return current_node;
+            } else if (current_node->express.get_number() < number) {
+                current_node = current_node->R_Node;
+            } else if (current_node->express.get_number() > number) {
+                current_node = current_node->L_Node;
             }
-            else if (current_knot->express.get_number() < number) {
-                current_knot = current_knot->R_Knot;
-            }
-            else if (current_knot->express.get_number() > number) {
-                current_knot = current_knot->L_Knot;
-            }
-            if (current_knot == nullptr) {
+            if (current_node == nullptr) {
                 flag = false;
                 return nullptr;
             }
@@ -276,103 +276,130 @@ public:
     }
 
     // Нахождение максимального ключа
-    Knot* Find_Max(Knot* c) {
-        Knot* current_knot = c;
-        while (current_knot->R_Knot != nullptr) current_knot = current_knot->R_Knot;
-        return current_knot;
+    Node* Find_Max(Node* c) {
+        Node* current_node = c;
+        while (current_node->R_Node != nullptr)
+            current_node = current_node->R_Node;
+        return current_node;
     }
 
     // Нахождение минимального ключа
-    Knot* Find_Min(Knot* c) {
-        Knot* current_knot = c;
-        while(current_knot->L_Knot != nullptr) current_knot = current_knot->L_Knot;
-        return current_knot;
+    Node* Find_Min(Node* c) {
+        Node* current_node = c;
+        while (current_node->L_Node != nullptr)
+            current_node = current_node->L_Node;
+        return current_node;
     }
-    
+
     // Поиск по значению
-    Knot* Find_By_Station(string station) {
-        Knot* current_root = root;
-        stack<Knot*> Train_stack;
+    Node* Find_By_Station(string station) {
+        Node* current_root = root;
+        stack<Node*> Train_stack;
         bool flag = false;
         while (current_root != nullptr) {
-            // cout << current_root->express.get_number() << " " << current_root->express.get_next_station() 
+            // cout << current_root->express.get_number() << " " << current_root->express.get_next_station()
             // << " " << current_root->express.get_departure_time() << "\n";
             if (current_root->express.get_next_station() == station) {
                 flag = true;
                 return current_root;
             }
-            if (current_root->L_Knot != nullptr) {
-                if (current_root->R_Knot != nullptr) {
-                    Train_stack.push(current_root->R_Knot);
+            if (current_root->L_Node != nullptr) {
+                if (current_root->R_Node != nullptr) {
+                    Train_stack.push(current_root->R_Node);
                 }
-                current_root = current_root->L_Knot;
-            }
-            else if (current_root->R_Knot != nullptr){
-                current_root = current_root->R_Knot;
-            }
-            else {
+                current_root = current_root->L_Node;
+            } else if (current_root->R_Node != nullptr) {
+                current_root = current_root->R_Node;
+            } else {
                 if (not Train_stack.empty()) {
                     current_root = Train_stack.top();
                     Train_stack.pop();
-                }
-                else {
+                } else {
                     current_root = nullptr;
                 }
             }
         }
-        if (not flag) return nullptr;
+        if (not flag)
+            return nullptr;
         return 0;
     }
 
     // Удаления узла
     void Pop_Knot(int number) {
-        Knot* deleted_knot = Find_Train(number);
-        if (deleted_knot == nullptr) return;
+        Node* deleted_knot = Find_Train(number);
+        if (deleted_knot == nullptr)
+            return;
         Move_Knot_to_Root(deleted_knot);
-        // Knot* current_knot = deleted_knot;
-        if (deleted_knot->L_Knot == nullptr && deleted_knot->R_Knot == nullptr) {
+        // Node* current_node = deleted_knot;
+        if (deleted_knot->L_Node == nullptr && deleted_knot->R_Node == nullptr) {
             root = nullptr;
             delete deleted_knot;
-        }
-        else if (deleted_knot->L_Knot != nullptr && deleted_knot->R_Knot == nullptr) {
-            Knot* current_knot = deleted_knot->L_Knot;
-            root = current_knot;
-            current_knot->Parent = nullptr;
+        } else if (deleted_knot->L_Node != nullptr && deleted_knot->R_Node == nullptr) {
+            Node* current_node = deleted_knot->L_Node;
+            root = current_node;
+            current_node->Parent = nullptr;
             delete deleted_knot;
-        }
-        else if (deleted_knot->L_Knot == nullptr && deleted_knot->R_Knot != nullptr) {
-            Knot* current_knot = deleted_knot->R_Knot;
-            root = current_knot;
-            current_knot->Parent = nullptr;
+        } else if (deleted_knot->L_Node == nullptr && deleted_knot->R_Node != nullptr) {
+            Node* current_node = deleted_knot->R_Node;
+            root = current_node;
+            current_node->Parent = nullptr;
             delete deleted_knot;
-        }
-        else if (deleted_knot->L_Knot != nullptr && deleted_knot->R_Knot != nullptr) {
-            cout << deleted_knot->L_Knot->express.get_number() << " " << deleted_knot->R_Knot->express.get_number() << "\n";
-            Knot* current_knot = deleted_knot->L_Knot;
-            current_knot = Find_Max(current_knot);
-            if (current_knot->Parent->R_Knot == current_knot) {
-                current_knot->Parent->R_Knot = current_knot->L_Knot;
-                if (current_knot->L_Knot != nullptr) current_knot->L_Knot->Parent = current_knot->Parent;
+        } else if (deleted_knot->L_Node != nullptr && deleted_knot->R_Node != nullptr) {
+            cout << deleted_knot->L_Node->express.get_number() << " " << deleted_knot->R_Node->express.get_number() << "\n";
+            Node* current_node = deleted_knot->L_Node;
+            current_node = Find_Max(current_node);
+            if (current_node->Parent->R_Node == current_node) {
+                current_node->Parent->R_Node = current_node->L_Node;
+                if (current_node->L_Node != nullptr)
+                    current_node->L_Node->Parent = current_node->Parent;
 
-                current_knot->L_Knot = deleted_knot->L_Knot;
-                deleted_knot->L_Knot->Parent = current_knot;
+                current_node->L_Node = deleted_knot->L_Node;
+                deleted_knot->L_Node->Parent = current_node;
 
-                current_knot->R_Knot = deleted_knot->R_Knot;
-                if (deleted_knot->R_Knot != nullptr) deleted_knot->R_Knot->Parent = current_knot;
+                current_node->R_Node = deleted_knot->R_Node;
+                if (deleted_knot->R_Node != nullptr)
+                    deleted_knot->R_Node->Parent = current_node;
+            } else {
+                current_node->R_Node = deleted_knot->R_Node;
+                if (deleted_knot->R_Node != nullptr)
+                    deleted_knot->R_Node->Parent = current_node;
             }
-            else {
-                current_knot->R_Knot = deleted_knot->R_Knot;
-                if (deleted_knot->R_Knot != nullptr) deleted_knot->R_Knot->Parent = current_knot;
-            }
 
-            root = current_knot;
-            current_knot->Parent = nullptr;
+            root = current_node;
+            current_node->Parent = nullptr;
             delete deleted_knot;
-
         }
     }
-};
 
+    void Clear_Tree() {
+        if (root == nullptr)
+            return;
+
+        stack<Node*> nodeStack;
+        Node* current = root;
+        Node* lastVisited = nullptr;
+
+        while (current != nullptr || !nodeStack.empty()) {
+            while (current != nullptr) {
+                nodeStack.push(current);
+                current = current->L_Node;
+            }
+
+            current = nodeStack.top();
+
+            // Если правый узел существует и еще не был посещен, идем в него
+            if (current->R_Node != nullptr && current->R_Node != lastVisited) {
+                current = current->R_Node;
+            } else {
+                nodeStack.pop();
+                delete current;
+                lastVisited = current;
+                current = nullptr;
+            }
+        }
+        root = nullptr;
+    }
+};
 
 int main() {
     setlocale(LC_ALL, "Russian");
@@ -382,26 +409,26 @@ int main() {
     ifstream input_file("input_file.txt");
     if (!input_file.is_open()) {
         cout << "Не удалось открыть файл!" << endl;
-        return 1;    }
+        return 1;
+    }
 
     int n;
     string s;
     int t;
     string line;
     while (getline(input_file, line)) {
-        cout << "Читаем строку: " << line << "\n";
+        // cout << "Читаем строку: " << line << "\n";
         istringstream liner(line);
         char comma;
         if (liner >> n >> comma >> s >> t) {
             s.pop_back();
             Train trtrtr(n, s, t);
-            trains.Add_Knot(trtrtr);            
+            trains.Add_Knot(trtrtr);
             // cout << "Добавлен поезд: " << trtrtr.get_number() << endl;
-        } 
-        else {
-           cout << "Ошибка разбора строки: " << line << "\n";
-       }
-   }
+        } else {
+            cout << "Ошибка разбора строки: " << line << "\n";
+        }
+    }
 
     // Проверка Add_Knot
     Train test_train1(111, "SAMARA", 13);
@@ -418,17 +445,24 @@ int main() {
     cout << "-----------\n";
     trains.Print_All();
     cout << "\n";
-    
+
     // Проверка Find_Train
-    Knot* ft = trains.Find_Train(111);
-    if (ft != nullptr) cout << "IT IS EXISTS\n" << ft->express.get_number() << " " 
-        << ft->express.get_next_station() << " " << ft->express.get_departure_time() << "\n";
-    else cout << "IT IS NOT EXISTS\n";
-    
+    Node* ft = trains.Find_Train(111);
+    if (ft != nullptr)
+        cout << "IT IS EXISTS\n"
+             << ft->express.get_number() << " "
+             << ft->express.get_next_station() << " " << ft->express.get_departure_time() << "\n";
+    else
+        cout << "IT IS NOT EXISTS\n";
+
     // Проверка поиска по станции
-    Knot* st = trains.Find_By_Station("Kemerovo");
+    Node* st = trains.Find_By_Station("Kemerovo");
     if (st != nullptr) {
         cout << st->express.get_number() << "\n";
     }
+
+    // Проверка очистки всего дерева
+    trains.Clear_Tree();
+    trains.Print_All();
+
 }
-    
