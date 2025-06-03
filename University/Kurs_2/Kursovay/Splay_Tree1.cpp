@@ -66,7 +66,6 @@ public:
             bool flag = false;
             while (not flag) {
                 if (adder_node->express.get_number() > current_node->express.get_number()) {
-                    // cout << "ALARM_ADD\n";
                     if (current_node->R_Node == nullptr) {
                         current_node->R_Node = adder_node;
                         adder_node->Parent = current_node;
@@ -430,24 +429,27 @@ int main() {
         }
     }
 
+    // Проверка Print_All
+    cout << "\n";
+    trains.Print_All();
+    cout << "\n";
+
     // Проверка Add_Knot
     Train test_train1(111, "SAMARA", 13);
     trains.Add_Knot(test_train1);
 
-    // Проверка Print_All
-    trains.Print_All();
-    cout << "\n";
+    
 
     // Проверка Pop_Knot
     trains.Pop_Knot(130);
 
     // trains.Find_Train(130);
-    cout << "-----------\n";
+    cout << "--------------\n";
     trains.Print_All();
     cout << "\n";
 
     // Проверка Find_Train
-    Node* ft = trains.Find_Train(111);
+    Node* ft = trains.Find_Train(703);
     if (ft != nullptr)
         cout << "IT IS EXISTS\n"
              << ft->express.get_number() << " "
@@ -456,13 +458,13 @@ int main() {
         cout << "IT IS NOT EXISTS\n";
 
     // Проверка поиска по станции
-    Node* st = trains.Find_By_Station("Kemerovo");
-    if (st != nullptr) {
-        cout << st->express.get_number() << "\n";
-    }
+    // Node* st = trains.Find_By_Station("Kemerovo");
+    // if (st != nullptr) {
+    //     cout << st->express.get_number() << "\n";
+    // }
 
     // Проверка очистки всего дерева
-    trains.Clear_Tree();
-    trains.Print_All();
+    // trains.Clear_Tree();
+    // trains.Print_All();
 
 }
