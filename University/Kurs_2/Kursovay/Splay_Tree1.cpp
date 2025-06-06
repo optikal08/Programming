@@ -57,7 +57,7 @@ public:
     }
 
     // Добавление нового элента
-    void Add_Knot(Node k) {
+    void Add_Node(Node k) {
         Node* adder_node = new Node(k);
         Node* current_node = root;
         if (Is_Empty()) {
@@ -85,7 +85,7 @@ public:
             }
         }
 
-        Move_Knot_to_Root(adder_node);
+        Move_Node_to_Root(adder_node);
     }
 
     // Вывод всех элементов дерева
@@ -113,7 +113,7 @@ public:
     }
 
     // Поднятия узла в корень
-    void Move_Knot_to_Root(Node* c) {
+    void Move_Node_to_Root(Node* c) {
         Node* current_node = c;
         while (current_node != root) {
             Node* father = current_node->Parent;
@@ -258,7 +258,7 @@ public:
             // cout << "!@#";
             // cout << current_node->express.get_number() << "\n";
             if (current_node->express.get_number() == number) {
-                Move_Knot_to_Root(current_node);
+                Move_Node_to_Root(current_node);
                 flag = true;
                 return current_node;
             } else if (current_node->express.get_number() < number) {
@@ -324,11 +324,11 @@ public:
     }
 
     // Удаления узла
-    void Pop_Knot(int number) {
+    void Pop_Node(int number) {
         Node* deleted_knot = Find_Train(number);
         if (deleted_knot == nullptr)
             return;
-        Move_Knot_to_Root(deleted_knot);
+        Move_Node_to_Root(deleted_knot);
         // Node* current_node = deleted_knot;
         if (deleted_knot->L_Node == nullptr && deleted_knot->R_Node == nullptr) {
             root = nullptr;
@@ -344,7 +344,6 @@ public:
             current_node->Parent = nullptr;
             delete deleted_knot;
         } else if (deleted_knot->L_Node != nullptr && deleted_knot->R_Node != nullptr) {
-            cout << deleted_knot->L_Node->express.get_number() << " " << deleted_knot->R_Node->express.get_number() << "\n";
             Node* current_node = deleted_knot->L_Node;
             current_node = Find_Max(current_node);
             if (current_node->Parent->R_Node == current_node) {
@@ -422,7 +421,7 @@ int main() {
         if (liner >> n >> comma >> s >> t) {
             s.pop_back();
             Train trtrtr(n, s, t);
-            trains.Add_Knot(trtrtr);
+            trains.Add_Node(trtrtr);
             // cout << "Добавлен поезд: " << trtrtr.get_number() << endl;
         } else {
             cout << "Ошибка разбора строки: " << line << "\n";
@@ -430,23 +429,23 @@ int main() {
     }
 
     // Проверка Print_All
-    cout << "\n";
+    cout << "Поиск\n";
     trains.Print_All();
     cout << "\n";
 
-    // Проверка Add_Knot
-    Train test_train1(111, "SAMARA", 13);
-    trains.Add_Knot(test_train1);
+    // Проверка Add_Node
+    // Train test_train1(111, "SAMARA", 13);
+    // trains.Add_Node(test_train1);
 
     
 
-    // Проверка Pop_Knot
-    trains.Pop_Knot(130);
+    // Проверка Pop_Node
+    // trains.Pop_Node(703);
 
     // trains.Find_Train(130);
-    cout << "--------------\n";
-    trains.Print_All();
-    cout << "\n";
+    // cout << "После удаления\n";
+    // trains.Print_All();
+    // cout << "\n";
 
     // Проверка Find_Train
     Node* ft = trains.Find_Train(703);
